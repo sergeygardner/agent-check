@@ -1,0 +1,20 @@
+{
+    "name": "sergeygardner/agentCheck",
+    "description": "Agent Check PHP Library",
+    "license": "Apache License 2.0",
+    "authors": [
+        {
+            "name": "Sergey Gardner",
+            "email": "sergeygardner@yandex.ru"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "AgentCheck\\": "./"
+        }
+    },
+    "require": {
+        "php": ">=7.1"
+    },
+    "require-dev": {}
+}

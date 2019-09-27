@@ -5,7 +5,7 @@ Agent Check PHP Library
 
 The current development is made by Sergei Gardner.
 
-The source of this library is released under the BSD license (see LICENSE for details).
+The source of this library is released under the Apache License (see LICENSE for details).
 
 ## Requirements
 
