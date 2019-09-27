@@ -7,12 +7,12 @@
  * Time: 19:00
  */
 
-namespace agentCheck;
+namespace Bitrix\Agent;
 
 /**
  * Interface AgentCheck
  *
- * @package agentCheck
+ * @package Bitrix\Agent
  */
 interface IAgentCheck
 {

@@ -10,7 +10,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Bitrix\\AgentCheck": "lib/"
+            "Bitrix\\Agent": "lib/"
         }
     },
     "require": {
