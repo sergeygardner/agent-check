@@ -18,50 +18,21 @@ interface IAgentCheck
 {
 
     /**
-     * @param null $model
+     * @param array|null $model
      *
      * @return IAgentCheck
      */
-    public function setList($model = null): IAgentCheck;
+    public function setModel(array $model = null): IAgentCheck;
 
     /**
      * @return bool
      */
-    public function isList(): bool;
+    public function isModel(): bool;
 
     /**
      * @return array
      */
-    public function getListFail(): array;
-
-    /**
-     * @param null $model
-     *
-     * @return IAgentCheck
-     */
-    public function setListFail($model = null): IAgentCheck;
-
-    /**
-     * @return bool
-     */
-    public function isListFail(): bool;
-
-    /**
-     * @return array
-     */
-    public function getListSuccess(): array;
-
-    /**
-     * @param null $model
-     *
-     * @return IAgentCheck
-     */
-    public function setListSuccess($model = null): IAgentCheck;
-
-    /**
-     * @return bool
-     */
-    public function isListSuccess(): bool;
+    public function getModel(): array;
 
     /**
      * @return IAgentCheck

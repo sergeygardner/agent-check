@@ -9,6 +9,9 @@
 
 namespace Bitrix\Agent;
 
+use CEventLog;
+use Bitrix\Main\Type\DateTime;
+
 /**
  * Class AgentCheck
  *
@@ -18,19 +21,24 @@ class AgentCheck implements IAgentCheck
 {
 
     /**
-     * @var array
+     * @var
      */
-    protected $list;
+    protected static $db;
 
     /**
      * @var array
      */
-    protected $listFail = [];
+    protected $model;
 
     /**
-     * @var array
+     * @var models\Agent
      */
-    protected $listSuccess = [];
+    protected $agentModel;
+
+    /**
+     * @var models\EventLog
+     */
+    protected $eventLogModel;
 
     /**
      * AgentCheck constructor.
@@ -41,97 +49,69 @@ class AgentCheck implements IAgentCheck
     }
 
     /**
-     * @return bool
+     * @return DateTime
      */
-    public function isList(): bool
+    protected static function getTime(): DateTime
     {
-        return !empty($this->getList());
+        return DateTime::createFromTimestamp(strtotime('+10 minute'));
     }
 
     /**
-     * @return array
+     * @return mixed
      */
-    public function getList(): array
+    protected static function getDb()
     {
-        if (null === $this->list) {
-            $this->setList();
+        if (null === static::$db) {
+            static::$db = \Bitrix\Main\Application::getConnection();
         }
 
-        return $this->list;
-    }
-
-    /**
-     * @param null $model
-     *
-     * @return IAgentCheck
-     */
-    public function setList($model = null): IAgentCheck
-    {
-        $this->list = $model ?? [];
-
-        return $this;
+        return static::$db;
     }
 
     /**
      * @return bool
      */
-    public function isListFail(): bool
+    public function isModel(): bool
     {
-        return !empty($this->getListFail());
+        return !empty($this->getModel());
     }
 
     /**
      * @return array
      */
-    public function getListFail(): array
+    public function getModel(): array
     {
-        if (null === $this->listFail) {
-            $this->setListFail();
+        if (null === $this->model) {
+            $this->setModel();
         }
 
-        return $this->listFail;
+        return $this->model;
     }
 
     /**
-     * @param null $model
+     * @param array|null $model
      *
      * @return IAgentCheck
      */
-    public function setListFail($model = null): IAgentCheck
+    public function setModel(array $model = null): IAgentCheck
     {
-        $this->listFail = $model ?? [];
+        if (null === $model) {
+            $model = [];
+            $agentsQuery = $this->getAgentModel()->getList(
+                [
+                    'filter' => [
+                        'ACTIVE'     => 'Y',
+                        '<NEXT_EXEC' => static::getTime(),
+                    ],
+                ]
+            );
 
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isListSuccess(): bool
-    {
-        return !empty($this->getListSuccess());
-    }
-
-    /**
-     * @return array
-     */
-    public function getListSuccess(): array
-    {
-        if (null === $this->listSuccess) {
-            $this->setListSuccess();
+            while ($agent = $agentsQuery->Fetch()) {
+                $model[] = $agent;
+            }
         }
 
-        return $this->listSuccess;
-    }
-
-    /**
-     * @param null $model
-     *
-     * @return IAgentCheck
-     */
-    public function setListSuccess($model = null): IAgentCheck
-    {
-        $this->listSuccess = $model ?? [];
+        $this->model = $model;
 
         return $this;
     }
@@ -141,6 +121,50 @@ class AgentCheck implements IAgentCheck
      */
     public function run(): IAgentCheck
     {
+        try {
+            foreach ($this->getModel() as $agent) {
+                $nextExec = strtotime((string)$agent['NEXT_EXEC']);
+                $lastExec = strtotime((string)$agent['LAST_EXEC']);
+                $deltaExec = abs($nextExec - time());
+
+                $this->getEventLogModel()::add(
+                    [
+                        "SEVERITY"      => "WARNING",
+                        "AUDIT_TYPE_ID" => "AGENT_EXEC",
+                        "MODULE_ID"     => static::class,
+                        "ITEM_ID"       => $agent['ID'],
+                        "DESCRIPTION"   => "Простой:".$deltaExec.' c, Последний раз выполнялся: '.$lastExec,
+                    ]
+                );
+            }
+        } catch (\Throwable $e) {
+            AddMessage2Log($e->getMessage(), static::class, 2, true);
+        }
+
         return $this;
+    }
+
+    /**
+     * @return models\EventLog
+     */
+    protected function getEventLogModel(): models\EventLogTable
+    {
+        if (null === $this->eventLogModel) {
+            $this->eventLogModel = new models\EventLogTable;
+        }
+
+        return $this->eventLogModel;
+    }
+
+    /**
+     * @return models\Agent
+     */
+    protected function getAgentModel(): models\AgentTable
+    {
+        if (null === $this->agentModel) {
+            $this->agentModel = new models\AgentTable;
+        }
+
+        return $this->agentModel;
     }
 }
