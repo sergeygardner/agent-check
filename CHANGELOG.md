@@ -2,4 +2,4 @@
 
 ### 2019-09-26 - v0.1
 
-* Initial commit
+* The first release

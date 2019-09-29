@@ -1,7 +1,7 @@
 Agent Check PHP Library
 ===========================
 
-[![Packagist](https://img.shields.io/packagist/v/sgardner/agentCheck.svg)](https://packagist.org/packages/sgardner/agentCheck)
+[![Packagist](https://img.shields.io/packagist/v/sergeygardner/agent-check.svg)](https://packagist.org/packages/sergeygardner/agent-check)
 
 The current development is made by Sergei Gardner.
 
@@ -17,6 +17,15 @@ Please look into CHANGELOG for a list of the past releases.
 
 ## Usage
 
-### With permanent token
+```require_once $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php";
+require_once '../../vendor/autoload.php';
+
+use \Bitrix\Agent\AgentCheck;
+
+$agentCheck = new AgentCheck;
+
+$agentCheck->run();
+```
 
 ## Logs
+Put a debug information on the standart log-file (via AddMessage2Log)
