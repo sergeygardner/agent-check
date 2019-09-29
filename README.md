@@ -15,6 +15,15 @@ The source of this library is released under the Apache License (see LICENSE for
 
 Please look into CHANGELOG for a list of the past releases.
 
+## Installation
+```
+Put "sergeygardner/agent-check": "*" to composer.json to the 'require' section
+Put {
+          "type": "git",
+          "url": "https://github.com/sergeygardner/agent-check"
+        } to composer.json to the 'repositories' section
+```
+
 ## Usage
 
 ```require_once $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php";
